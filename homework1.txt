@@ -1,0 +1,29 @@
+im=imread('1.jpg');      
+imshow(im);                   
+[sy,sx,sz]=size(im);
+angle=-30;   %要旋转的角度
+theta=angle/180*pi;
+sx1=round(abs(sx*cos(theta))+abs(sy*sin(theta)));
+sy1=round(abs(sx*sin(theta))+abs(sy*cos(theta)));
+%根据旋转角度计算旋转后图像的高度与宽度
+im1 = uint8(zeros(sy1,sx1,3));    %旋转后的矩阵(初值为0) 
+for x=1:sx1  
+    for y=1:sy1  
+        x0 = uint32(x*cos(theta) +y*sin(theta)-... 
+            0.5*sy1*cos(theta)-0.5*sy1*sin(theta)+0.5*sx);  
+        y0= uint32(y*cos(theta)-x*sin(theta)+...
+            0.5*sx1*sin(theta)-0.5*sy1*cos(theta)+0.5*sy);      
+        x0=round(x0);   %取整，最邻近插值         
+        y0=round(y0);           
+        if ((x0>0)&&(y0>0)&&(x0<=sx)&&(y0<=sy))  
+            im1(y,x,:) = im(y0,x0,:);  
+        end
+    end
+end
+im2= imrotate(im,30,'nearest');
+figure,imshow(uint8(im2));
+figure,imshow(uint8(im1));
+
+基本思想：根据要旋转的角度以及几何原理计算出旋转后的图像大小。
+将旋转后图像矩阵上的点映射回原图像对映射后的点取绝对值，
+利用最邻近插值法为旋转后的图像赋值。    
